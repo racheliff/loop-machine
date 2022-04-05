@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CloudService } from '../services/cloud.service';
-import { LooperAudioService } from './looper-audio.service';
+import { LooperService } from '../services/looper.service';
 
 @Component({
   selector: 'app-looper-panel',
@@ -13,7 +13,7 @@ export class LooperPanelComponent implements OnInit, OnDestroy {
   power: boolean = false;
   tracks: any[] = [];
 
-  constructor(private looperAudioService: LooperAudioService, private cloudService: CloudService) { }
+  constructor(private looperService: LooperService, private cloudService: CloudService) { }
 
   ngOnInit(): void {
     this.cloudService.getFiles().subscribe((tracks: any) => {
@@ -24,9 +24,9 @@ export class LooperPanelComponent implements OnInit, OnDestroy {
   onPowerClick(){
     this.power = !this.power;
     if(this.power){
-      this.looperAudioService.loadTracks(this.tracks);
+      this.looperService.loadTracks(this.tracks);
     } else {
-      this.looperAudioService.clearTracks();
+      this.looperService.clearTracks();
       this.btns = this.btns.map(btn => false);
     }
     
@@ -35,11 +35,11 @@ export class LooperPanelComponent implements OnInit, OnDestroy {
   onBtnClick(index: number){
     if(this.power){
       this.btns[index] = !this.btns[index];
-      this.looperAudioService.trackOnOff(index);
+      this.looperService.trackOnOff(index);
     }
   }
 
   ngOnDestroy(): void {
-    this.looperAudioService.stopTimer();
+    this.looperService.stopTimer();
   }
 }

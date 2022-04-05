@@ -5,18 +5,18 @@ import { TrackData } from "../interfaces/track-data";
 @Injectable({
     providedIn: 'root'
 })
-export class LooperAudioService {
-    buttonMatrix: TrackData[] = [];
+export class LooperService {
+    trackList: TrackData[] = [];
     timerOn: boolean = false;
     private stop$ = new Subject();
     TRACK_LENGTH = 8;
 
     trackOnOff(index: number) {
-        if(this.buttonMatrix[index].on){
-            this.buttonMatrix[index].on = false;
-            this.stopTrack(this.buttonMatrix[index]);
+        if(this.trackList[index].on){
+            this.trackList[index].on = false;
+            this.stopTrack(this.trackList[index]);
         }else {
-            this.buttonMatrix[index].on = true;
+            this.trackList[index].on = true;
         }
         if(!this.timerOn){
             this.timerOn = true;
@@ -28,17 +28,17 @@ export class LooperAudioService {
     }
 
     private isAllOff(){
-        return this.buttonMatrix.find(btn => btn.on) === undefined;
+        return this.trackList.find(btn => btn.on) === undefined;
     }
 
     private getTracksOn(){
-        return this.buttonMatrix.filter(btn => btn.on);
+        return this.trackList.filter(btn => btn.on);
     }
 
     startTimer(){
         timer(0, this.TRACK_LENGTH * 1000).pipe(takeUntil(this.stop$)).subscribe(() => {
-            const audiosOn = this.getTracksOn();
-            audiosOn.forEach(audio => this.playTrack(audio));
+            const tracksOn = this.getTracksOn();
+            tracksOn.forEach(track => this.playTrack(track));
         });
     }
 
@@ -63,11 +63,11 @@ export class LooperAudioService {
             audio.loop = true;
             audio.load();
           
-            const newAudio: TrackData = {
+            const newTrack: TrackData = {
                 on: false,
                 audio: audio
             }
-            this.buttonMatrix.push(newAudio);
+            this.trackList.push(newTrack);
         });
     }
 
@@ -78,6 +78,6 @@ export class LooperAudioService {
             track.audio.pause();
             track.audio.remove();
         });
-        this.buttonMatrix = [];
+        this.trackList = [];
     }
 }
