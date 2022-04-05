@@ -1,0 +1,3 @@
+<div class="grid-container">
+    <div *ngFor="let btn of btns; let i = index" (click) = "play(i)" [ngClass]="{'on': btns[i]}">{{i}}</div>
+</div>
