@@ -40,6 +40,6 @@ export class LooperPanelComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.looperAudioService.stop();
+    this.looperAudioService.stopTimer();
   }
 }

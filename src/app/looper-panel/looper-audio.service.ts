@@ -1,41 +1,15 @@
 import { Injectable } from "@angular/core";
-import { interval, Observable, Subject, takeUntil, timer } from "rxjs";
-import { AudioButton } from "../interfaces/audio-button";
+import { Subject, takeUntil, timer } from "rxjs";
+import { TrackData } from "../interfaces/track-data";
 
 @Injectable({
     providedIn: 'root'
 })
 export class LooperAudioService {
-    buttonMatrix: AudioButton[] = [];
+    buttonMatrix: TrackData[] = [];
     timerOn: boolean = false;
     private stop$ = new Subject();
-    power: boolean = false;
     TRACK_LENGTH = 8;
-
-    powerOnOff(tracks: any[]){
-        this.power = !this.power;
-        if(this.power){
-            this.loadTracks(tracks);
-        } else {
-            this.clearTracks();
-        }
-    }
-
-    loadTracks(tracks: any[]){
-        tracks.forEach((track: any) => {
-            const audio = new Audio();
-            audio.src = track.url;
-            audio.loop = true;
-            audio.load();
-          
-            const newAudio: AudioButton = {
-                on:false,
-                url: track.url,
-                audio: audio
-            }
-            this.buttonMatrix.push(newAudio);
-        });
-    }
 
     trackOnOff(index: number) {
         if(this.buttonMatrix[index].on){
@@ -46,50 +20,64 @@ export class LooperAudioService {
         }
         if(!this.timerOn){
             this.timerOn = true;
-            this.playTracks();
+            this.startTimer();
         }
         if(this.isAllOff()){
-            this.stop();
+            this.stopTimer();
         }
     }
 
-    isAllOff(){
+    private isAllOff(){
         return this.buttonMatrix.find(btn => btn.on) === undefined;
     }
 
-    getTrackOn(){
+    private getTracksOn(){
         return this.buttonMatrix.filter(btn => btn.on);
     }
 
-    playTracks(){
+    startTimer(){
         timer(0, this.TRACK_LENGTH * 1000).pipe(takeUntil(this.stop$)).subscribe(() => {
-            const audiosOn = this.buttonMatrix.filter(btn => btn.on);
-            audiosOn.forEach(audio => this.play(audio));
+            const audiosOn = this.getTracksOn();
+            audiosOn.forEach(audio => this.playTrack(audio));
         });
     }
 
-    play(audioButton: AudioButton) {
-        audioButton.audio.play();
-    }
-
-    stop(){
+    stopTimer(){
         this.timerOn = false;
         this.stop$.next(0);
     }
 
-    stopTrack(audioButton: AudioButton){
-        audioButton.on = false;
-        audioButton.audio.pause();
+    playTrack(trackData: TrackData) {
+        trackData.audio.play();
+    }
+
+    stopTrack(trackData: TrackData){
+        trackData.on = false;
+        trackData.audio.pause();
+    }
+
+    loadTracks(tracks: any[]){
+        tracks.forEach((track: any) => {
+            const audio = new Audio();
+            audio.src = track.url;
+            audio.loop = true;
+            audio.load();
+          
+            const newAudio: TrackData = {
+                on: false,
+                audio: audio
+            }
+            this.buttonMatrix.push(newAudio);
+        });
     }
 
     clearTracks(){
-        this.stop();
-        this.getTrackOn().forEach(track => {
+        this.stopTimer();
+        this.getTracksOn().forEach(track => {
             track.on = false;
             track.audio.pause();
             track.audio.remove();
         });
         this.buttonMatrix = [];
-       
     }
 }
