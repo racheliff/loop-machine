@@ -5,6 +5,14 @@
     background-color: #2196F3;
     padding: 10px;
   }
+  .power {
+    height: 100px;
+    width: 50px;
+    border: 1px solid black;
+    &.on {
+      background-color: green;
+    }
+  }
   
   .grid-container > div {
     background-color: white;

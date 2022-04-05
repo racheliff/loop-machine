@@ -9,26 +9,44 @@ export class LooperAudioService {
     buttonMatrix: AudioButton[] = [];
     timerOn: boolean = false;
     private stop$ = new Subject();
+    power: boolean = false;
+    TRACK_LENGTH = 8;
 
-    loadTracks(tracks: any){
+    powerOnOff(tracks: any[]){
+        this.power = !this.power;
+        if(this.power){
+            this.loadTracks(tracks);
+        } else {
+            this.clearTracks();
+        }
+    }
+
+    loadTracks(tracks: any[]){
         tracks.forEach((track: any) => {
+            const audio = new Audio();
+            audio.src = track.url;
+            audio.loop = true;
+            audio.load();
+          
             const newAudio: AudioButton = {
-                on :false,
-                url : track.url,
-                audio: null
+                on:false,
+                url: track.url,
+                audio: audio
             }
             this.buttonMatrix.push(newAudio);
         });
     }
 
-    click(index: number) {
+    trackOnOff(index: number) {
         if(this.buttonMatrix[index].on){
+            this.buttonMatrix[index].on = false;
             this.stopTrack(this.buttonMatrix[index]);
+        }else {
+            this.buttonMatrix[index].on = true;
         }
-        this.buttonMatrix[index].on = !this.buttonMatrix[index].on;
         if(!this.timerOn){
             this.timerOn = true;
-            this.playAllMusicIntervals();
+            this.playTracks();
         }
         if(this.isAllOff()){
             this.stop();
@@ -39,22 +57,19 @@ export class LooperAudioService {
         return this.buttonMatrix.find(btn => btn.on) === undefined;
     }
 
-    playAllMusicIntervals(){
-        timer(0,5000).pipe(takeUntil(this.stop$)).subscribe(() => {
+    getTrackOn(){
+        return this.buttonMatrix.filter(btn => btn.on);
+    }
+
+    playTracks(){
+        timer(0, this.TRACK_LENGTH * 1000).pipe(takeUntil(this.stop$)).subscribe(() => {
             const audiosOn = this.buttonMatrix.filter(btn => btn.on);
             audiosOn.forEach(audio => this.play(audio));
         });
     }
 
     play(audioButton: AudioButton) {
-        if(!audioButton.audio){
-            const audio = new Audio();
-            audio.src = audioButton.url;
-            audio.loop = true;
-            audio.load();
-            audio.play();
-            audioButton.audio = audio;
-        }
+        audioButton.audio.play();
     }
 
     stop(){
@@ -63,7 +78,18 @@ export class LooperAudioService {
     }
 
     stopTrack(audioButton: AudioButton){
+        audioButton.on = false;
         audioButton.audio.pause();
-        audioButton.audio = null;
+    }
+
+    clearTracks(){
+        this.stop();
+        this.getTrackOn().forEach(track => {
+            track.on = false;
+            track.audio.pause();
+            track.audio.remove();
+        });
+        this.buttonMatrix = [];
+       
     }
 }

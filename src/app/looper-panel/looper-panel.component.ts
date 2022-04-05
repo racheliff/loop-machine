@@ -10,17 +10,33 @@ import { LooperAudioService } from './looper-audio.service';
 export class LooperPanelComponent implements OnInit, OnDestroy {
 
   btns: boolean[] = Array(9);
+  power: boolean = false;
+  tracks: any[] = [];
+
   constructor(private looperAudioService: LooperAudioService, private cloudService: CloudService) { }
 
   ngOnInit(): void {
-    this.cloudService.getFiles().subscribe(files => {
-      this.looperAudioService.loadTracks(files);
+    this.cloudService.getFiles().subscribe((tracks: any) => {
+      this.tracks = tracks;
     });
   }
 
-  play(index: number){
-    this.btns[index] = !this.btns[index];
-    this.looperAudioService.click(index);
+  onPowerClick(){
+    this.power = !this.power;
+    if(this.power){
+      this.looperAudioService.loadTracks(this.tracks);
+    } else {
+      this.looperAudioService.clearTracks();
+      this.btns = this.btns.map(btn => false);
+    }
+    
+  }
+
+  onBtnClick(index: number){
+    if(this.power){
+      this.btns[index] = !this.btns[index];
+      this.looperAudioService.trackOnOff(index);
+    }
   }
 
   ngOnDestroy(): void {
