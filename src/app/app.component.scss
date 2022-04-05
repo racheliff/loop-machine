@@ -1,0 +1,11 @@
+body {
+    background: #262626;
+}
+
+:host{
+    background: #262626;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}

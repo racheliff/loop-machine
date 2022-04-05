@@ -1,25 +1,64 @@
-.grid-container {
+:host{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  .grid-container {
     display: grid;
     grid-template-columns: auto auto auto;
     gap: 10px;
-    background-color: #2196F3;
     padding: 10px;
+    box-shadow: #000000 4px 4px 8px, #4d4d4d -4px -4px 8px;
+    transform: translateY(50px);
+    background: #262626;
+    border-radius: 30px;
   }
   .power {
     height: 100px;
     width: 50px;
     border: 1px solid black;
+
+    box-shadow: #000000 2px 2px 8px, #4d4d4d -2px -2px 8px;
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: none;
+    border-radius: 150px;
+    margin: 15px;
+    cursor: pointer;
+    transition: all 400ms ease;
     &.on {
-      background-color: green;
+      //background-color: green;
+      box-shadow: inset #000000 2px 2px 8px, inset#4d4d4d -2px -2px 8px;
+      transform: scale(0.95);
     }
   }
   
   .grid-container > div {
-    background-color: white;
+
     border: 1px solid black;
     text-align: center;
     font-size: 30px;
+   
+    &.action-button {
+      box-shadow: #000000 2px 2px 8px, #4d4d4d -2px -2px 8px;
+      width: 70px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: transparent;
+      border: none;
+      border-radius: 150px;
+      margin: 15px;
+      cursor: pointer;
+      transition: all 400ms ease;
+    }
     &.on {
-        background-color: yellow;
+      box-shadow: inset #000000 2px 2px 8px, inset#4d4d4d -2px -2px 8px;
+      transform: scale(0.95);
     }
   }
+}
