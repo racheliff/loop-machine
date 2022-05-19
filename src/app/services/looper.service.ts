@@ -28,7 +28,7 @@ export class LooperService {
     }
 
     private isAllOff(){
-        return this.trackList.find(btn => btn.on) === undefined;
+        return !this.trackList.find(btn => btn.on);
     }
 
     private getTracksOn(){

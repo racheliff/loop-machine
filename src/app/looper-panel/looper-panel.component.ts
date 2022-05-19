@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { take } from 'rxjs/internal/operators/take';
 import { CloudService } from '../services/cloud.service';
 import { LooperService } from '../services/looper.service';
 
@@ -16,7 +17,7 @@ export class LooperPanelComponent implements OnInit, OnDestroy {
   constructor(private looperService: LooperService, private cloudService: CloudService) { }
 
   ngOnInit(): void {
-    this.cloudService.getFiles().subscribe((tracks: any) => {
+    this.cloudService.getFiles().pipe(take(1)).subscribe((tracks: any) => {
       this.tracks = tracks;
     });
   }
